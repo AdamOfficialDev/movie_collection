@@ -1,8 +1,10 @@
+// Import library SweetAlert2 untuk menampilkan alert
 import React from "react";
-import Swal from "sweetalert2"; // Import library SweetAlert2 untuk menampilkan alert
+import Swal from "sweetalert2";
 
+// Komponen MovieCard untuk menampilkan detail film dan mengelola operasi pengeditan dan penghapusan
 function MovieCard({ movie, deleteMovie, editMovie }) {
-  // Fungsi untuk menangani penghapusan movie
+  // Fungsi untuk menangani penghapusan film
   const handleDelete = (id) => {
     // Tampilkan alert konfirmasi penghapusan
     Swal.fire({
@@ -16,9 +18,9 @@ function MovieCard({ movie, deleteMovie, editMovie }) {
     }).then((result) => {
       // Ketika tombol konfirmasi ditekan
       if (result.isConfirmed) {
-        // Panggil fungsi deleteMovie dengan id movie yang akan dihapus
+        // Panggil fungsi deleteMovie dengan id film yang akan dihapus
         deleteMovie(id);
-        // Tampilkan alert sukses setelah movie berhasil dihapus
+        // Tampilkan alert sukses setelah film berhasil dihapus
         Swal.fire({
           icon: "success", // Jenis icon (success)
           title: "Success", // Judul alert
@@ -31,21 +33,60 @@ function MovieCard({ movie, deleteMovie, editMovie }) {
     });
   };
 
-  // Fungsi untuk menangani pengeditan movie
+  // Fungsi untuk menangani pengeditan film
   const handleEdit = (id) => {
-    // Tampilkan alert untuk pengeditan movie
+    // Tampilkan alert untuk pengeditan film
     Swal.fire({
       title: "Edit Movie", // Judul alert
       html: `
         <div class="text-left">
           <label for="editedTitle" class="block font-medium">Title:</label>
-          <input type="text" id="editedTitle" class="w-2/3 swal2-input" value="${movie.title}" required>
+          <input type="text" id="editedTitle" class="w-2/3 swal2-input" value="${
+            movie.title
+          }" required>
           <label for="editedDirector" class="block font-medium mt-4">Director:</label>
-          <input type="text" id="editedDirector" class="w-2/3 swal2-input" value="${movie.director}" required>
+          <input type="text" id="editedDirector" class="w-2/3 swal2-input" value="${
+            movie.director
+          }" required>
           <label for="editedSummary" class="block font-medium mt-4">Summary:</label>
-          <textarea id="editedSummary" class="w-2/3 swal2-textarea" required>${movie.summary}</textarea>
+          <textarea id="editedSummary" class="w-2/3 swal2-textarea" required>${
+            movie.summary
+          }</textarea>
+          <label for="editedGenres" class="block font-medium mt-4">Genres:</label>
+          <div id="editedGenres" class="flex flex-wrap">
+            <label class="inline-flex items-center mr-4 mb-2">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" value="Drama" ${
+                movie.genres.includes("Drama") ? "checked" : ""
+              }>
+              <span class="ml-2">Drama</span>
+            </label>
+            <label class="inline-flex items-center mr-4 mb-2">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" value="Action" ${
+                movie.genres.includes("Action") ? "checked" : ""
+              }>
+              <span class="ml-2">Action</span>
+            </label>
+            <label class="inline-flex items-center mr-4 mb-2">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" value="Animation" ${
+                movie.genres.includes("Animation") ? "checked" : ""
+              }>
+              <span class="ml-2">Animation</span>
+            </label>
+            <label class="inline-flex items-center mr-4 mb-2">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" value="Sci-Fi" ${
+                movie.genres.includes("Sci-Fi") ? "checked" : ""
+              }>
+              <span class="ml-2">Sci-Fi</span>
+            </label>
+            <label class="inline-flex items-center mr-4 mb-2">
+              <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-500" value="Horror" ${
+                movie.genres.includes("Horror") ? "checked" : ""
+              }>
+              <span class="ml-2">Horror</span>
+            </label>
+          </div>
         </div>
-      `, // Konten form edit movie dalam HTML
+      `,
       showCancelButton: true, // Tampilkan tombol Cancel
       confirmButtonText: "Save", // Teks tombol konfirmasi
       cancelButtonText: "Cancel", // Teks tombol cancel
@@ -55,29 +96,39 @@ function MovieCard({ movie, deleteMovie, editMovie }) {
         const editedTitle = document.getElementById("editedTitle").value; // Ambil nilai judul yang diedit
         const editedDirector = document.getElementById("editedDirector").value; // Ambil nilai direktur yang diedit
         const editedSummary = document.getElementById("editedSummary").value; // Ambil nilai ringkasan yang diedit
+        const editedGenres = Array.from(
+          document.querySelectorAll(
+            "#editedGenres input[type='checkbox']:checked"
+          )
+        ).map((input) => input.value);
 
         // Validasi apakah semua input telah diisi
-        if (!editedTitle || !editedDirector || !editedSummary) {
+        if (
+          !editedTitle ||
+          !editedDirector ||
+          !editedSummary ||
+          editedGenres.length === 0
+        ) {
           Swal.showValidationMessage("Please fill in all fields!"); // Tampilkan pesan validasi
           return; // Hentikan proses
         }
 
-        // Buat objek movie yang diedit
+        // Buat objek film yang diedit
         const editedMovie = {
-          id: id, // Gunakan id yang sama dengan movie yang diedit
+          id: id, // Gunakan id yang sama dengan film yang diedit
           title: editedTitle, // Gunakan judul yang diedit
           director: editedDirector, // Gunakan direktur yang diedit
           summary: editedSummary, // Gunakan ringkasan yang diedit
-          genres: movie.genres, // Gunakan genre yang sama dengan movie asli
+          genres: editedGenres, // Gunakan genre yang diedit
         };
 
-        // Panggil fungsi editMovie dengan id movie dan data movie yang diedit
+        // Panggil fungsi editMovie dengan id film dan data film yang diedit
         editMovie(id, editedMovie);
       },
     }).then((result) => {
       // Ketika tombol konfirmasi ditekan
       if (result.isConfirmed) {
-        // Tampilkan alert sukses setelah movie berhasil diedit
+        // Tampilkan alert sukses setelah film berhasil diedit
         Swal.fire({
           icon: "success", // Jenis icon (success)
           title: "Success", // Judul alert
@@ -93,26 +144,26 @@ function MovieCard({ movie, deleteMovie, editMovie }) {
   // Render card movie
   return (
     <div className="bg-white shadow-md rounded-md p-4 m-4">
-      {/* Tampilkan judul movie */}
+      {/* Tampilkan judul film */}
       <h2 className="text-lg font-bold">{movie.title}</h2>
-      {/* Tampilkan informasi direktur movie */}
+      {/* Tampilkan informasi direktur film */}
       <p className="text-sm text-gray-500">
         Directed by <span className="italic">{movie.director}</span>
       </p>
-      {/* Tampilkan ringkasan movie */}
+      {/* Tampilkan ringkasan film */}
       <p className="text-sm mt-2">{movie.summary}</p>
-      {/* Tampilkan genre-genre movie */}
+      {/* Tampilkan genre-genre film */}
       <p className="text-sm mt-2">Genres: {movie.genres.join(", ")}</p>
-      {/* Tombol untuk edit dan hapus movie */}
+      {/* Tombol untuk edit dan hapus film */}
       <div className="mt-4 flex">
-        {/* Tombol edit movie */}
+        {/* Tombol edit film */}
         <button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
           onClick={() => handleEdit(movie.id)}
         >
           Edit
         </button>
-        {/* Tombol hapus movie */}
+        {/* Tombol hapus film */}
         <button
           className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
           onClick={() => handleDelete(movie.id)}
